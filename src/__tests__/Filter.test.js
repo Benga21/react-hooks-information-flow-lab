@@ -1,18 +1,24 @@
-import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
-import Filter from "../components/Filter";
-
-test("displays the <select> element", () => {
-  render(<Filter />);
-  expect(screen.queryByRole("combobox")).toBeInTheDocument();
-});
-
-test("calls the onCategoryChange callback prop when the <select> is changed", () => {
-  const onCategoryChange = jest.fn();
-  render(<Filter onCategoryChange={onCategoryChange} />);
-
-  fireEvent.change(screen.queryByRole("combobox"), {
-    target: { value: "Dairy" },
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect'; 
+import Filter from '../components/Filter'; 
+describe('Filter Component', () => {
+  test('renders correctly', () => {
+    const mockCallback = jest.fn();
+    render(<Filter onCategoryChange={mockCallback} />);
+    const selectElement = screen.getByRole('combobox');
+    expect(selectElement).toBeInTheDocument()
+    expect(screen.getByText('All')).toBeInTheDocument();
+    expect(screen.getByText('Produce')).toBeInTheDocument();
+    expect(screen.getByText('Dairy')).toBeInTheDocument();
+    expect(screen.getByText('Dessert')).toBeInTheDocument();
   });
-  expect(onCategoryChange).toHaveBeenCalled();
+  test('calls onCategoryChange when selection changes', () => {
+    const mockCallback = jest.fn();
+    render(<Filter onCategoryChange={mockCallback} />);
+    const selectElement = screen.getByRole('combobox');
+    fireEvent.change(selectElement, { target: { value: 'Produce' } });
+    expect(mockCallback).toHaveBeenCalledTimes(1);
+    expect(mockCallback).toHaveBeenCalledWith(expect.any(Object)); 
+  });
 });
